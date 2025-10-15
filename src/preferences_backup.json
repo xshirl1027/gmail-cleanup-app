@@ -13,7 +13,6 @@
   "delete_promotional": false,
   "delete_spam": true,
   "delete_newsletters": true,
-  "unsubscribe_emails": false,
   "keep_categories": [
     "personal",
     "work",

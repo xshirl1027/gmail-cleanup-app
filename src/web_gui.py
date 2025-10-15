@@ -255,7 +255,6 @@ class WebGUIHandler(http.server.BaseHTTPRequestHandler):
                 <label><input type="checkbox" id="delete-promotional" {"checked" if self.preferences.get('delete_promotional') else ""}> 🛍️ Delete promotional emails</label>
                 <label><input type="checkbox" id="delete-spam" {"checked" if self.preferences.get('delete_spam') else ""}> 🚫 Delete spam emails</label>
                 <label><input type="checkbox" id="delete-newsletters" {"checked" if self.preferences.get('delete_newsletters') else ""}> 📰 Delete newsletters</label>
-                <label><input type="checkbox" id="unsubscribe-emails" {"checked" if self.preferences.get('unsubscribe_emails', False) else ""}> 📧 Unsubscribe from emails before deleting</label>
             </div>
         </div>
 
@@ -418,8 +417,7 @@ class WebGUIHandler(http.server.BaseHTTPRequestHandler):
                 to_delete_senders: emailsToDelete,
                 delete_promotional: document.getElementById('delete-promotional').checked,
                 delete_spam: document.getElementById('delete-spam').checked,
-                delete_newsletters: document.getElementById('delete-newsletters').checked,
-                unsubscribe_emails: document.getElementById('unsubscribe-emails').checked
+                delete_newsletters: document.getElementById('delete-newsletters').checked
             }};
 
             const button = event.target;
@@ -561,7 +559,6 @@ class WebGUIHandler(http.server.BaseHTTPRequestHandler):
             self.preferences['delete_promotional'] = settings['delete_promotional']
             self.preferences['delete_spam'] = settings['delete_spam']
             self.preferences['delete_newsletters'] = settings['delete_newsletters']
-            self.preferences['unsubscribe_emails'] = settings.get('unsubscribe_emails', False)
             
             # Save to JSON file
             success = save_user_preferences(self.preferences)

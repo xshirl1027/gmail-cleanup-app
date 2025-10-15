@@ -25,7 +25,6 @@ def load_user_preferences():
             'delete_promotional': False,
             'delete_spam': True,
             'delete_newsletters': True,
-            'unsubscribe_emails': False,
             'keep_categories': [
                 'personal',
                 'work', 
