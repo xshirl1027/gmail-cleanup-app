@@ -16,14 +16,33 @@ def main():
     print("🚀 Starting Gmail Cleanup App...")
     
     # Initialize Gmail client
-    print("Authenticating with Gmail...")
-    gmail_client = GmailClient()
-    if not gmail_client.authenticate():
-        print("\nAuthentication failed. Please run setup first:")
-        print("python setup_oauth.py")
-        return
+    print("🔐 Authenticating with Gmail...")
+    
+    try:
+        gmail_client = GmailClient()
+        if not gmail_client.authenticate():
+            print("\n❌ Authentication failed.")
+            print("💡 This could be due to:")
+            print("   - Network connection issues")
+            print("   - Gmail API service temporarily unavailable")
+            print("   - Browser-related issues during OAuth")
+            print("\n🔄 Try running the app again in a few minutes.")
+            return
 
-    print("✓ Authentication successful!")
+        print("✅ Authentication successful!")
+        
+        # Test basic Gmail API access
+        print("🧪 Testing Gmail API connection...")
+        test_emails = gmail_client.get_emails(query="in:inbox", max_results=1)
+        if test_emails is None:
+            print("⚠️ Gmail API test failed - continuing anyway")
+        else:
+            print(f"✅ Gmail API test successful ({len(test_emails)} test email(s) found)")
+    
+    except Exception as e:
+        print(f"❌ Error during initialization: {e}")
+        print("🔄 Please try running the app again.")
+        return
     
     # Use web-based GUI (works without tkinter)
     print("Opening web-based interface...")
@@ -54,10 +73,20 @@ def start_email_cleanup(gmail_client):
     print("📬 Retrieving emails from inbox...")
     query = "in:inbox"
     max_emails = USER_PREFERENCES.get('max_emails_per_run')
+    
+    if max_emails:
+        print(f"📈 Limiting to {max_emails} emails per run")
+    else:
+        print("📈 No limit set - will process all emails")
+    
     emails = gmail_client.get_emails(query=query, max_results=max_emails)
 
     if not emails:
         print("📭 No emails found in inbox.")
+        print("💡 This could be because:")
+        print("   - Your inbox is empty")
+        print("   - There was an API error (check above for error messages)")
+        print("   - Your Gmail account has no emails matching the query")
         return
 
     print(f"📊 Found {len(emails)} emails to analyze and process...")

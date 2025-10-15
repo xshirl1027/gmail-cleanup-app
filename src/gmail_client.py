@@ -7,12 +7,8 @@ from googleapiclient.discovery import build
 class GmailClient:
     def __init__(self):
         self.service = None
-        # Update scopes to explicitly include all required permissions
-        self.scopes = [
-            'https://www.googleapis.com/auth/gmail.modify',
-            'https://www.googleapis.com/auth/gmail.labels',
-            'https://mail.google.com/'  # Full access scope - includes delete
-        ]
+        # Use the most comprehensive Gmail scope to avoid permission issues
+        self.scopes = ['https://mail.google.com/']
         self.creds = None
         
         # Embedded OAuth2 credentials - users don't need to create their own
@@ -67,30 +63,41 @@ class GmailClient:
         return True
 
     def get_emails(self, user_id='me', query='', max_results=None):
-        """Get emails based on query with pagination support"""
-        try:
-            emails = []
-            next_page_token = None
-            total_fetched = 0
-            
-            while True:
+        """Get emails based on query with pagination support and retry logic"""
+        import time
+        from googleapiclient.errors import HttpError
+        
+        emails = []
+        next_page_token = None
+        total_fetched = 0
+        retry_count = 0
+        max_retries = 3
+        
+        print(f"🔍 Searching for emails with query: '{query}'")
+        
+        while True:
+            try:
+                # Use smaller batch size to avoid server overload
+                batch_size = min(100, max_results - total_fetched if max_results else 100)
+                
                 # Request a batch of messages
                 results = self.service.users().messages().list(
                     userId=user_id, 
                     q=query, 
                     pageToken=next_page_token,
-                    maxResults=500  # Maximum allowed by Gmail API
+                    maxResults=batch_size
                 ).execute()
                 
                 batch = results.get('messages', [])
                 if not batch:
+                    print("📭 No more emails found")
                     break
                     
                 emails.extend(batch)
                 total_fetched += len(batch)
                 
                 # Print progress
-                print(f"Fetched {total_fetched} emails so far...")
+                print(f"📨 Fetched {total_fetched} emails so far...")
                 
                 # Check if we've reached the maximum requested
                 if max_results and total_fetched >= max_results:
@@ -100,12 +107,48 @@ class GmailClient:
                 # Get next page token
                 next_page_token = results.get('nextPageToken')
                 if not next_page_token:
+                    print("✅ Reached end of emails")
                     break
+                
+                # Reset retry count on successful request
+                retry_count = 0
+                
+                # Small delay to be nice to Gmail API
+                time.sleep(0.1)
                     
-            return emails
-        except Exception as error:
-            print(f'An error occurred: {error}')
-            return []
+            except HttpError as error:
+                retry_count += 1
+                print(f"⚠️ Gmail API error (attempt {retry_count}/{max_retries}): {error}")
+                
+                if retry_count >= max_retries:
+                    print("❌ Max retries reached. Gmail API may be experiencing issues.")
+                    if error.resp.status == 403:
+                        print("📋 This might be a quota or permission issue.")
+                        print("💡 Try again in a few minutes or check your Gmail API quotas.")
+                    elif error.resp.status == 500:
+                        print("🔧 Gmail servers returned 'Unknown Error' (HTTP 500)")
+                        print("💭 This is usually a temporary issue on Google's side")
+                        print("🔄 Solutions to try:")
+                        print("   1. Wait 5-10 minutes and try again")
+                        print("   2. Try with a smaller batch of emails")
+                        print("   3. Check if Gmail web interface is working normally")
+                        print("   4. Clear your token.pickle file and re-authenticate")
+                    elif error.resp.status >= 500:
+                        print("🔧 Gmail servers are experiencing issues. Try again later.")
+                    break
+                
+                # Exponential backoff
+                wait_time = 2 ** retry_count
+                print(f"⏳ Waiting {wait_time} seconds before retry...")
+                time.sleep(wait_time)
+                continue
+                
+            except Exception as error:
+                print(f"❌ Unexpected error: {error}")
+                break
+                    
+        print(f"📊 Total emails retrieved: {len(emails)}")
+        return emails
 
     def get_email_details(self, user_id='me', msg_id=''):
         """Get detailed information about a specific email"""
