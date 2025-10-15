@@ -35,24 +35,26 @@ gmail-cleanup-app
    pip install -r requirements.txt
    ```
 
-4. **Set up Gmail API credentials:**
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable the Gmail API for your project
-   - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
-   - Choose "Desktop application" as the application type
-   - Download the credentials file and save it as `credentials.json` in the project root
-   - **Important**: Never share or commit this file publicly
+4. **No additional setup required!**
+   - The app includes built-in Gmail API credentials
+   - Just run the app and sign in with your Gmail account when prompted
 
 ## Usage
 
-1. **Run the application:**
-   ```
+1. **Run the application:**   
+   ```bash
    python src/main.py
    ```
 
-2. **Specify the senders and keywords:**
-   - Modify the `main.py` file to include the list of senders and promotional keywords you want to filter out.
+2. **First time setup:**
+   - A web browser will open asking you to sign in to your Gmail account
+   - Grant permission for the app to access your Gmail
+   - The app will remember your authorization for future use
+
+3. **Configure email filtering:**
+   - Use the web interface to specify which email senders to block
+   - Choose filtering options (promotional, spam, newsletters)
+   - Click "Save & Start Cleanup" to begin
 
 ## Functionality
 

@@ -14,12 +14,24 @@ class GmailClient:
             'https://mail.google.com/'  # Full access scope - includes delete
         ]
         self.creds = None
+        
+        # Embedded OAuth2 credentials - users don't need to create their own
+        self.client_config = {
+            "installed": {
+                "client_id": "695220780841-tclno1hte8j2c12krlq6vd13mqoq6fcg.apps.googleusercontent.com",
+                "project_id": "free-your-email",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_secret": "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",
+                "redirect_uris": ["http://localhost"]
+            }
+        }
 
     def authenticate(self):
         """Authenticate user using OAuth2 flow"""
         # Get the project root directory (one level up from src/)
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        credentials_path = os.path.join(project_root, 'credentials.json')
         token_path = os.path.join(project_root, 'token.pickle')
         
         # Check if we have saved credentials
@@ -32,18 +44,19 @@ class GmailClient:
             if self.creds and self.creds.expired and self.creds.refresh_token:
                 self.creds.refresh(Request())
             else:
-                if not os.path.exists(credentials_path):
-                    print(f"Error: credentials.json not found at {credentials_path}")
-                    print("Please follow the setup instructions to create OAuth2 credentials.")
-                    return False
+                print("🔐 Gmail authentication required...")
+                print("A browser window will open for you to sign in to your Gmail account.")
+                print("This app will only access your Gmail to help clean up emails.")
+                input("Press Enter to continue...")
                 
                 # Delete token.pickle if it exists to force new authentication with updated scopes
                 if os.path.exists(token_path):
                     os.remove(token_path)
                     print("Removed old token to refresh permissions.")
                     
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    credentials_path, self.scopes)
+                # Use embedded credentials instead of file
+                flow = InstalledAppFlow.from_client_config(
+                    self.client_config, self.scopes)
                 self.creds = flow.run_local_server(port=0)
             
             # Save the credentials for the next run

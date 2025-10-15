@@ -1,5 +1,4 @@
-# Credentials and tokens
-credentials.json
+# Tokens (keep user's authentication tokens private)
 token.pickle
 
 # Environment variables
