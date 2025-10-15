@@ -35,8 +35,14 @@ gmail-cleanup-app
    pip install -r requirements.txt
    ```
 
-4. **Set up environment variables:**
-   - Copy `.env.example` to `.env` and fill in your Gmail API credentials.
+4. **Set up Gmail API credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable the Gmail API for your project
+   - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
+   - Choose "Desktop application" as the application type
+   - Download the credentials file and save it as `credentials.json` in the project root
+   - **Important**: Never share or commit this file publicly
 
 ## Usage
 
