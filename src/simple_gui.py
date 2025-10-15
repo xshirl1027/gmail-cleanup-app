@@ -220,33 +220,30 @@ class SimpleEmailGUI:
         """Save settings and signal to start cleanup"""
         # Get blocked senders from text area
         text_content = self.blocked_text.get('1.0', tk.END).strip()
-        
         # Parse email addresses (one per line, filter out empty lines)
         blocked_senders = []
         for line in text_content.split('\n'):
             email = line.strip()
             if email and '@' in email:
                 blocked_senders.append(email)
-                
         # Update preferences
         self.preferences['blocked_senders'] = blocked_senders
         self.preferences['delete_promotional'] = self.delete_promotional_var.get()
         self.preferences['delete_spam'] = self.delete_spam_var.get()
         self.preferences['delete_newsletters'] = self.delete_newsletters_var.get()
-        
         # Save to config file
         self.save_preferences_to_file()
-        
         messagebox.showinfo("Success", f"Saved {len(blocked_senders)} blocked senders. Starting cleanup...")
-        
         # Set flag to start cleanup
         self.start_cleanup = True
         self.root.quit()
+        self.root.destroy()
         
     def cancel(self):
         """Cancel without saving"""
         self.start_cleanup = False
         self.root.quit()
+        self.root.destroy()
         
     def save_preferences_to_file(self):
         """Save preferences to config.py file"""

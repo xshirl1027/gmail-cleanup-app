@@ -34,6 +34,8 @@ class WebGUIHandler(http.server.BaseHTTPRequestHandler):
             self.handle_remove_email()
         elif self.path == '/save-settings':
             self.handle_save_settings()
+        elif self.path == '/cancel':
+            self.handle_cancel()
         else:
             self.send_error(404)
 
@@ -430,22 +432,44 @@ class WebGUIHandler(http.server.BaseHTTPRequestHandler):
                 headers: {{'Content-Type': 'application/json'}},
                 body: JSON.stringify(settings)
             }})
-            .then(response => response.json())
-            .then(data => {{
-                if (data.success) {{
-                    alert('✅ Settings saved! Starting cleanup...');
-                    window.location.href = '/close';
+            .then(response => {{
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('text/html')) {{
+                    // Success - HTML response means settings were saved
+                    return response.text().then(html => {{
+                        document.write(html);
+                        document.close();
+                    }});
                 }} else {{
-                    alert('❌ Error: ' + data.error);
-                    button.textContent = originalText;
-                    button.disabled = false;
+                    // Error - JSON response
+                    return response.json().then(data => {{
+                        alert('❌ Error: ' + data.error);
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }});
                 }}
+            }})
+            .catch(error => {{
+                alert('❌ Error: ' + error);
+                button.textContent = originalText;
+                button.disabled = false;
             }});
         }}
 
         function cancel() {{
             if (confirm('❌ Cancel email cleanup?')) {{
-                window.location.href = '/close';
+                fetch('/cancel', {{
+                    method: 'POST'
+                }})
+                .then(response => response.text())
+                .then(html => {{
+                    document.write(html);
+                    document.close();
+                }})
+                .catch(error => {{
+                    console.error('Error:', error);
+                    window.close();
+                }});
             }}
         }}
 
@@ -564,21 +588,72 @@ class WebGUIHandler(http.server.BaseHTTPRequestHandler):
             success = save_user_preferences(self.preferences)
             
             should_start_cleanup = True
-            response = {'success': success, 'message': 'Settings saved to JSON'}
+            
+            if success:
+                # Return success page that closes the window
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                close_html = '''
+                <html>
+                <head><title>Gmail Cleanup - Success</title></head>
+                <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                    <h2>✅ Settings Saved Successfully!</h2>
+                    <p>Starting email cleanup...</p>
+                    <p>You can close this window.</p>
+                    <script>
+                        setTimeout(function() {
+                            window.close();
+                        }, 2000);
+                    </script>
+                </body>
+                </html>
+                '''
+                self.wfile.write(close_html.encode())
+            else:
+                # Return error as JSON for JavaScript to handle
+                response = {'success': False, 'error': 'Failed to save settings'}
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode())
             
         except Exception as e:
             response = {'success': False, 'error': str(e)}
-        
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(response).encode())
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
 
     def handle_close(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write(b'<html><body><script>window.close();</script><p>You can close this window.</p></body></html>')
+
+    def handle_cancel(self):
+        global should_start_cleanup
+        should_start_cleanup = False  # Ensure cleanup doesn't start
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        cancel_html = '''
+        <html>
+        <head><title>Gmail Cleanup - Cancelled</title></head>
+        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h2>❌ Email Cleanup Cancelled</h2>
+            <p>No changes were made.</p>
+            <p>You can close this window.</p>
+            <script>
+                setTimeout(function() {
+                    window.close();
+                }, 2000);
+            </script>
+        </body>
+        </html>
+        '''
+        self.wfile.write(cancel_html.encode())
 
 class WebGUI:
     def __init__(self, gmail_client):
