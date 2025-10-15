@@ -1,0 +1,28 @@
+{
+  "to_delete_senders": [
+    "noreply@glassdoor.com",
+    "noreply@indeed.com",
+    "updates@newsletter.ziprecruiter.com",
+    "newsletter@ziprecruiter.com",
+    "mail@mail.glassdoor.com",
+    "noreply@glassdoor.com",
+    "alert@notification.bebee.com",
+    "noreply@glassdoor.com",
+    "info@trabajo.org"
+  ],
+  "delete_promotional": false,
+  "delete_spam": true,
+  "delete_newsletters": true,
+  "unsubscribe_emails": false,
+  "keep_categories": [
+    "personal",
+    "work",
+    "financial",
+    "travel",
+    "health",
+    "legal",
+    "family"
+  ],
+  "confidence_threshold": 0.6,
+  "max_emails_per_run": null
+}

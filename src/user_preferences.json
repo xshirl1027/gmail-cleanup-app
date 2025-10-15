@@ -1,0 +1,22 @@
+{
+  "to_delete_senders": [
+    "hello@iblushshop.com",
+    "info@trabajo.org",
+    "newsletters@email.independent.co.uk"
+  ],
+  "delete_promotional": false,
+  "delete_spam": true,
+  "delete_newsletters": true,
+  "unsubscribe_emails": true,
+  "keep_categories": [
+    "personal",
+    "work",
+    "financial",
+    "travel",
+    "health",
+    "legal",
+    "family"
+  ],
+  "confidence_threshold": 0.6,
+  "max_emails_per_run": null
+}
