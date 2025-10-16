@@ -66,6 +66,7 @@ gmail-cleanup-app
 - **Delete Emails:** Unwanted emails are deleted based on the filtering criteria.
 
 <img width="1433" height="763" alt="Screenshot 2025-10-16 at 3 01 09 PM" src="https://github.com/user-attachments/assets/a1059fda-bcc4-43de-a9f4-bc87f09f53bb" />
+<img width="1423" height="681" alt="Screenshot 2025-10-16 at 3 12 13 PM" src="https://github.com/user-attachments/assets/80cd3136-1b52-4b07-8fe9-bb181cb4410b" />
 <img width="1141" height="774" alt="Screenshot 2025-10-16 at 3 01 36 PM" src="https://github.com/user-attachments/assets/57989b36-77be-4a2d-b850-a2a89c5f1a5a" />
 
 
