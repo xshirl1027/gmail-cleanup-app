@@ -176,6 +176,11 @@ def start_email_cleanup(gmail_client):
         search_queries.append(newsletter_query)
         print("📰 Added newsletter pattern filter (conservative)")
     
+    # 5. Search for social emails if enabled
+    if USER_PREFERENCES.get('delete_social', False):
+        search_queries.append("category:social")
+        print("👥 Added social folder filter")
+    
     if not search_queries:
         print("❌ No filtering criteria enabled - nothing to delete")
         return
@@ -249,6 +254,11 @@ def start_email_cleanup(gmail_client):
                     delete_reason = "Newsletter/Digest sender"
                 elif USER_PREFERENCES.get('delete_promotional', False) and ('promotional' in subject.lower() or 'unsubscribe' in subject.lower()):
                     delete_reason = "Promotional content in subject"
+                elif USER_PREFERENCES.get('delete_social', False):
+                    # Check if this appears to be a social media notification
+                    social_keywords = ['facebook', 'twitter', 'instagram', 'linkedin', 'snapchat', 'tiktok', 'youtube']
+                    if any(keyword in clean_sender.lower() or keyword in subject.lower() for keyword in social_keywords):
+                        delete_reason = "Social media notification"
             
             # Add to deletion list
             emails_to_delete.append({
