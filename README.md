@@ -1,6 +1,6 @@
 # Gmail Cleanup App
 
-This project is a Python application that connects to your Gmail account and helps you clean up unwanted emails--freeing up your storage spaces. It allows you to specify a list of senders for deletion for your entire inbox.
+This project is a Python application that connects to your Gmail account and helps you clean up unwanted emails--freeing up your storage spaces. It allows you to specify a list of senders for deletion for your entire inbox or other criterias like promotional or social emails, and then deletes them accordingly.
 
 ## Project Structure
 
