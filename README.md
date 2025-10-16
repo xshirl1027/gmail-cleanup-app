@@ -1,6 +1,6 @@
 # Gmail Cleanup App
 
-This project is a Python application that connects to your Gmail account and helps you clean up unwanted emails. It allows you to specify a list of senders for deletion for your entire inbox.
+This project is a Python application that connects to your Gmail account and helps you clean up unwanted emails--freeing up your storage spaces. It allows you to specify a list of senders for deletion for your entire inbox or other criterias like promotional or social emails, and then deletes them accordingly.
 
 ## Project Structure
 
@@ -65,38 +65,10 @@ gmail-cleanup-app
 - **Filter Emails:** The application identifies emails from specified senders and those containing promotional keywords.
 - **Delete Emails:** Unwanted emails are deleted based on the filtering criteria.
 
-## Troubleshooting
+<img width="1433" height="763" alt="Screenshot 2025-10-16 at 3 01 09 PM" src="https://github.com/user-attachments/assets/a1059fda-bcc4-43de-a9f4-bc87f09f53bb" />
+<img width="1423" height="681" alt="Screenshot 2025-10-16 at 3 12 13 PM" src="https://github.com/user-attachments/assets/80cd3136-1b52-4b07-8fe9-bb181cb4410b" />
+<img width="1141" height="774" alt="Screenshot 2025-10-16 at 3 01 36 PM" src="https://github.com/user-attachments/assets/57989b36-77be-4a2d-b850-a2a89c5f1a5a" />
 
-### "Access Denied" or "Unverified App" Error
-
-If you get an error message like "This app hasn't been verified by Google" or "access_denied (403)", this means the app is in testing mode. Here are your options:
-
-**Option 1: Contact the Developer (Recommended)**
-- Contact me to add your Gmail address as a test user
-- This is the quickest solution
-
-**Option 2: Use Your Own Google Cloud Project**
-- Go to [Google Cloud Console](https://console.cloud.google.com/)
-- Create a new project
-- Enable the Gmail API
-- Create OAuth2 credentials for "Desktop Application"
-- Replace the embedded credentials in `src/gmail_client.py` with your own
-
-**Option 3: Continue Despite Warning (Advanced Users)**
-- On the Google sign-in page, click "Advanced"
-- Click "Go to [app name] (unsafe)"
-- This bypasses the verification warning
-
-### Other Common Issues
-
-**"Token has been expired or revoked"**
-- Delete the `token.pickle` file and run the app again
-- This will prompt you to re-authenticate
-
-**"No emails found in inbox"**
-- This might be a temporary Gmail API issue
-- Wait a few minutes and try again
-- Check that your Gmail account actually has emails in the inbox
 
 ## Contributing
 
