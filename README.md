@@ -65,38 +65,10 @@ gmail-cleanup-app
 - **Filter Emails:** The application identifies emails from specified senders and those containing promotional keywords.
 - **Delete Emails:** Unwanted emails are deleted based on the filtering criteria.
 
-## Troubleshooting
+<img width="1433" height="763" alt="Screenshot 2025-10-16 at 3 01 09 PM" src="https://github.com/user-attachments/assets/a1059fda-bcc4-43de-a9f4-bc87f09f53bb" />
+<img width="1434" height="765" alt="Screenshot 2025-10-16 at 3 01 18 PM" src="https://github.com/user-attachments/assets/2460a17a-cc43-4002-a45b-f25f17b5de1b" />
+<img width="1141" height="774" alt="Screenshot 2025-10-16 at 3 01 36 PM" src="https://github.com/user-attachments/assets/57989b36-77be-4a2d-b850-a2a89c5f1a5a" />
 
-### "Access Denied" or "Unverified App" Error
-
-If you get an error message like "This app hasn't been verified by Google" or "access_denied (403)", this means the app is in testing mode. Here are your options:
-
-**Option 1: Contact the Developer (Recommended)**
-- Contact me to add your Gmail address as a test user
-- This is the quickest solution
-
-**Option 2: Use Your Own Google Cloud Project**
-- Go to [Google Cloud Console](https://console.cloud.google.com/)
-- Create a new project
-- Enable the Gmail API
-- Create OAuth2 credentials for "Desktop Application"
-- Replace the embedded credentials in `src/gmail_client.py` with your own
-
-**Option 3: Continue Despite Warning (Advanced Users)**
-- On the Google sign-in page, click "Advanced"
-- Click "Go to [app name] (unsafe)"
-- This bypasses the verification warning
-
-### Other Common Issues
-
-**"Token has been expired or revoked"**
-- Delete the `token.pickle` file and run the app again
-- This will prompt you to re-authenticate
-
-**"No emails found in inbox"**
-- This might be a temporary Gmail API issue
-- Wait a few minutes and try again
-- Check that your Gmail account actually has emails in the inbox
 
 ## Contributing
 
