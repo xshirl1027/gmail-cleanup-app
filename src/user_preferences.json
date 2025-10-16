@@ -4,7 +4,10 @@
     "info@trabajo.org",
     "newsletters@email.independent.co.uk",
     "alert@notification.bebee.com",
-    "ryan@alert.refer.io"
+    "ryan@alert.refer.io",
+    "LEO@legeropinion.com",
+    "noreply@glassdoor.com",
+    "no-reply@notification.circle.so"
   ],
   "delete_promotional": false,
   "delete_spam": true,
