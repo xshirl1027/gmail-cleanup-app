@@ -22,5 +22,6 @@
     "family"
   ],
   "confidence_threshold": 0.6,
-  "max_emails_per_run": null
+  "max_emails_per_run": null,
+  "delete_social": false
 }
