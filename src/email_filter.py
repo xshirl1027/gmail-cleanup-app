@@ -27,11 +27,15 @@ class EmailFilter:
             # Extract body content
             body = self._extract_body(message['payload'])
             
+            # Extract Gmail labels/categories
+            labels = message.get('labelIds', [])
+            
             return {
                 'sender': sender,
                 'subject': subject,
                 'body': body[:1000] if body else '',  # Limit body to 1000 chars
-                'message_id': message_id
+                'message_id': message_id,
+                'labels': labels  # Include Gmail labels
             }
         except Exception as e:
             print(f"Error extracting email content: {e}")
@@ -80,6 +84,7 @@ class EmailFilter:
         From: {email_content['sender']}
         Subject: {email_content['subject']}
         Body Preview: {email_content['body'][:500]}...
+        Gmail Labels: {email_content.get('labels', [])}
 
         INSTRUCTIONS:
         1. Check if sender is in blocked list
@@ -117,10 +122,11 @@ class EmailFilter:
             return self._fallback_filter(email_content, user_preferences)
     
     def _fallback_filter(self, email_content, user_preferences):
-        """Fallback filtering logic if AI fails"""
+        """Fallback filtering logic if AI fails - now uses Gmail labels"""
         sender = email_content['sender'].lower()
         subject = email_content['subject'].lower()
         body = email_content['body'].lower()
+        labels = email_content.get('labels', [])
         
         # Check blocked senders
         for blocked_sender in user_preferences.get('blocked_senders', []):
@@ -132,12 +138,29 @@ class EmailFilter:
                     "confidence": 1.0
                 }
         
-        # Check for promotional keywords
-        promotional_keywords = [
-            'unsubscribe', 'promotional', 'marketing', 'sale', 'discount', 
-            'offer', 'deal', 'coupon', 'promo', 'advertisement', 'newsletter'
-        ]
+        # Check Gmail promotional category using labels
+        if user_preferences.get('delete_promotional', False):
+            promotional_labels = ['CATEGORY_PROMOTIONS', 'PROMOTIONS']
+            if any(label in labels for label in promotional_labels):
+                return {
+                    "delete": True,
+                    "reason": "Email is in Gmail Promotional category",
+                    "category": "promotional",
+                    "confidence": 0.95
+                }
         
+        # Check Gmail social category using labels
+        if user_preferences.get('delete_social', False):
+            social_labels = ['CATEGORY_SOCIAL', 'SOCIAL']
+            if any(label in labels for label in social_labels):
+                return {
+                    "delete": True,
+                    "reason": "Email is in Gmail Social category",
+                    "category": "social",
+                    "confidence": 0.95
+                }
+        
+        # Check for spam keywords
         spam_keywords = [
             'viagra', 'casino', 'lottery', 'winner', 'congratulations',
             'free money', 'click here', 'act now', 'limited time'
@@ -153,13 +176,26 @@ class EmailFilter:
                 "confidence": 0.9
             }
         
-        if any(keyword in content for keyword in promotional_keywords):
-            return {
-                "delete": user_preferences.get('delete_promotional', True),
-                "reason": "Promotional email detected",
-                "category": "promotional",
-                "confidence": 0.7
-            }
+        # Newsletter detection - more specific patterns
+        newsletter_keywords = ['unsubscribe', 'newsletter', 'weekly digest', 'monthly update']
+        newsletter_senders = ['newsletter@', 'noreply@', 'no-reply@', 'updates@', 'news@']
+        
+        if user_preferences.get('delete_newsletters', False):
+            if any(keyword in content for keyword in newsletter_keywords):
+                return {
+                    "delete": True,
+                    "reason": "Newsletter content detected",
+                    "category": "newsletter",
+                    "confidence": 0.8
+                }
+            
+            if any(pattern in sender for pattern in newsletter_senders):
+                return {
+                    "delete": True,
+                    "reason": "Newsletter sender pattern detected",
+                    "category": "newsletter",
+                    "confidence": 0.8
+                }
         
         # Job-related emails - be more conservative
         job_keywords = ['job', 'career', 'position', 'hiring', 'interview', 'resume']

@@ -9,7 +9,7 @@
     "noreply@glassdoor.com",
     "no-reply@notification.circle.so"
   ],
-  "delete_promotional": false,
+  "delete_promotional": true,
   "delete_spam": true,
   "delete_newsletters": true,
   "keep_categories": [
